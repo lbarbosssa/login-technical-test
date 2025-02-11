@@ -4,19 +4,22 @@ import { NativeBaseProvider } from "native-base";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppRoutes from './routes/AppRoutes';
 import { theme } from "./theme/theme";
+import { AuthProvider } from './contexts/AuthContext';
+
 LogBox.ignoreLogs([
   "In React 18, SSRProvider is not necessary and is a noop.", 
 ]);
 
-
 function App(): React.JSX.Element {
-
   return (
     <SafeAreaProvider>
       <NativeBaseProvider theme={theme}>
-        <AppRoutes />
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </NativeBaseProvider>
     </SafeAreaProvider>
   );
 }
+
 export default App;

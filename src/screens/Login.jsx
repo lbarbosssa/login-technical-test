@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Box, Button, Center, Input, VStack, Text } from "native-base";
 import { colors } from "../theme/colors";
-import { useForm, Controller } from "react-hook-form"; 
+import { useForm, Controller } from "react-hook-form";
+import AuthContext from "../contexts/AuthContext"; 
 
 export default function Login({ navigation }) {
   const { control, handleSubmit, formState: { errors } } = useForm();
+  const [loginError, setLoginError] = useState(""); 
+  const { login } = useContext(AuthContext); 
 
-  const onSubmit = (data) => {
-    console.log(data); 
+  const onSubmit = async (data) => {
+    try {
+     
+      await login(data.email, data.password);
+      navigation.navigate("Home");
+    } catch (error) {
+      setLoginError("Falha na autenticação. Tente novamente.");
+    }
   };
 
   return (
@@ -17,6 +26,7 @@ export default function Login({ navigation }) {
           Login Teste
         </Text>
         <VStack space={4}>
+
           <Text fontSize="sm" color="black">
             E-mail
           </Text>
@@ -29,7 +39,7 @@ export default function Login({ navigation }) {
                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 message: "Formato de e-mail inválido"
               }
-            }}
+            }}  
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Digite seu e-mail"
@@ -39,12 +49,12 @@ export default function Login({ navigation }) {
                 onChangeText={onChange}
                 isInvalid={!!errors.email}
                 _focus={{ borderColor: colors.primary }}
-                
               />
             )}
           />
           {errors.email && <Text color="red.500">{errors.email.message}</Text>}
 
+          
           <Text fontSize="sm" color="black">
             Senha
           </Text>
@@ -63,17 +73,22 @@ export default function Login({ navigation }) {
                 onChangeText={onChange}
                 isInvalid={!!errors.password}
                 _focus={{ borderColor: colors.primary }}
+                secureTextEntry
               />
             )}
           />
           {errors.password && <Text color="red.500">{errors.password.message}</Text>}
 
+          {/* Exibindo erros de login */}
+          {loginError && <Text color="red.500" textAlign="center">{loginError}</Text>}
+
+          
           <Button
             bg={colors.primary}
             _pressed={{ bg: colors.primaryDark }}
             mt={4}
             borderRadius="md"
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(onSubmit)} 
           >
             Login
           </Button>
