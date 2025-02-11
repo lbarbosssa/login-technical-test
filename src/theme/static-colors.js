@@ -1,5 +1,7 @@
+// src/theme/colors.js
 import { useThemeStore } from "../store/themeStore";
 
+// Definindo as cores para cada tema
 const white = '#fff';
 const primary = "#07639d";
 const primaryDark = "#054f7a";
@@ -15,9 +17,7 @@ const themes = {
     primaryDark,
     background: white,
     screenBg: '#eee',
-    cardBg: white,
     text: "#333",
-    secondaryText: "#1c1c1c",
     txtW: white,
     backdrop,
     danger,
@@ -29,12 +29,10 @@ const themes = {
     primary,
     primaryDark,
     background: '#000',
-    screenBg: '#212121',
-    cardBg: '#303030',
+    screenBg: 'red',
     text: "#fff",
-    secondaryText: "#c4c4c4",
     txtW: white,
-    backdrop: "rgba(0, 0, 0, 0.8)",
+    backdrop,
     danger,
     dangerDark,
     success,
@@ -42,8 +40,10 @@ const themes = {
   },
 };
 
-export const useColors = () => {
-  const theme = useThemeStore((state) => state.theme);
-  console.log(theme)
-  return themes[theme] || themes.light;
-};
+// Criando um Proxy para pegar sempre o estado atualizado do Zustand
+export const colors = new Proxy({}, {
+  get: (_, prop) => {
+    const theme = useThemeStore.getState().theme; // Obtém o tema atual do Zustand
+    return themes[theme]?.[prop]; // Retorna a cor correta para o tema
+  },
+});

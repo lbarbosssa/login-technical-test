@@ -1,13 +1,14 @@
 import React, { useContext, useState } from "react";
 import { Box, Button, Center, Input, VStack, Text } from "native-base";
-import { colors } from "../theme/colors";
 import { useForm, Controller } from "react-hook-form";
-import AuthContext from "../contexts/AuthContext"; 
+import AuthContext from "../../contexts/AuthContext";
+import { useColors } from '../../theme/colors'; 
 
 export default function Login({ navigation }) {
   const { control, handleSubmit, formState: { errors } } = useForm();
   const [loginError, setLoginError] = useState(""); 
   const { login } = useContext(AuthContext); 
+  const colors = useColors()
 
   const onSubmit = async (data) => {
     try {
@@ -79,14 +80,11 @@ export default function Login({ navigation }) {
           />
           {errors.password && <Text color="red.500">{errors.password.message}</Text>}
 
-          {/* Exibindo erros de login */}
           {loginError && <Text color="red.500" textAlign="center">{loginError}</Text>}
-
           
           <Button
             bg={colors.primary}
             _pressed={{ bg: colors.primaryDark }}
-            mt={4}
             borderRadius="md"
             onPress={handleSubmit(onSubmit)} 
           >

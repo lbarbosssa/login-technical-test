@@ -1,5 +1,5 @@
 import { extendTheme } from "native-base";
-import { colors } from "./colors";
+import { colors } from "./static-colors";
 
 export const theme = extendTheme({
   colors: {

@@ -1,10 +1,14 @@
 import React from "react";
 import { Modal, View, FlatList } from "react-native";
 import { Box, Text, Button } from "native-base";
-import styles from "./style";
-import {colors} from '../../theme/colors'
+
+import { useColors } from '../../theme/colors';
+import { createStyles } from "./styles";
 
 const ModalList = ({ visible, data, onClose }) => {
+  const colors = useColors()
+  const styles = createStyles(colors);
+
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.modalContainer}>
@@ -17,8 +21,8 @@ const ModalList = ({ visible, data, onClose }) => {
             style={styles.flatList}
             renderItem={({ item }) => (
               <Box borderBottomWidth={1} borderColor="coolGray.300" p={3}>
-                <Text bold fontSize="md">{item.title}</Text>
-                <Text color="gray.500">{item.body}</Text>
+                <Text bold fontSize="md" color={colors.secondaryText}>{item.title}</Text>
+                <Text color={colors.secondaryText}>{item.body}</Text>
               </Box>
             )}
           />

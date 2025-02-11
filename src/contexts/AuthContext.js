@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Criar um interceptor para adicionar o token automaticamente
     const requestInterceptor = api.interceptors.request.use(
       (config) => {
         if (authToken) {
@@ -19,7 +18,6 @@ export const AuthProvider = ({ children }) => {
       (error) => Promise.reject(error)
     );
 
-    // Remover o interceptor quando o contexto for desmontado
     return () => {
       api.interceptors.request.eject(requestInterceptor);
     };
