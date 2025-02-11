@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Text, SafeAreaView, useColorScheme } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, SafeAreaView, useColorScheme, Appearance } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button, Alert, VStack, HStack, IconButton, CloseIcon, Card, Radio, Stack, Switch } from "native-base";
 import api from "../../services/api";
 import ModalList from "../../components/ModalList/ModalList";
@@ -11,7 +12,7 @@ import { createStyles } from "./styles";
 const themeOptions = [
   { label: 'Claro', value: 'light' },
   { label: 'Escuro', value: 'dark' },
-]
+];
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -22,10 +23,47 @@ const Home = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const { theme, setTheme } = useThemeStore();
-  const colors = useColors()
+  const colors = useColors();
   const styles = createStyles(colors);
 
   const systemTheme = useColorScheme();
+
+  useEffect(() => {
+    const loadSwitchState = async () => {
+      try {
+        const storedSwitchState = await AsyncStorage.getItem("autoTheme");
+        if (storedSwitchState !== null) {
+          const switchValue = JSON.parse(storedSwitchState)
+          if (switchValue) setTheme(systemTheme)
+          setIsSwitchOn(switchValue);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar estado do switch", error);
+      }
+    };
+    loadSwitchState();
+  }, []);
+
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      if (isSwitchOn) {
+        setTheme(colorScheme);
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isSwitchOn]);
+
+  useEffect(() => {
+    const saveSwitchState = async () => {
+      try {
+        await AsyncStorage.setItem("autoTheme", JSON.stringify(isSwitchOn));
+      } catch (error) {
+        console.error("Erro ao salvar estado do switch", error);
+      }
+    };
+    saveSwitchState();
+  }, [isSwitchOn]);
 
   const userData = async (url, type) => {
     if (type === "success") {
@@ -38,7 +76,6 @@ const Home = () => {
 
     try {
       const response = await api.get(url);
-      console.log(response?.config?.headers?.Authorization);
       setTimeout(() => {
         setData(response.data);
         setModalVisible(true);
@@ -55,8 +92,10 @@ const Home = () => {
   };
 
   const handleSwitch = (value) => {
-    if(value) setTheme(systemTheme);
     setIsSwitchOn(value);
+    if (value) {
+      setTheme(systemTheme);
+    }
   };
 
   return (
@@ -64,21 +103,11 @@ const Home = () => {
       <Card style={styles.card} shadow={2}>
         <Text style={styles.cardTitle}>Gerenciamento de Estado</Text>
         <Text style={styles.cardDescription}>
-          Alterne entre as opções de tema abaixo
+          Configure sua preferência de tema
         </Text>
 
-        <Radio.Group
-          name="themeGroup"
-          value={theme}
-          onChange={setTheme}
-
-        >
-          <Stack direction={{
-            base: "row",
-          }} alignItems={{
-            base: "flex-start",
-            md: "center"
-          }} space={4} w="100%">
+        <Radio.Group name="themeGroup" value={theme} onChange={setTheme}>
+          <Stack direction={{ base: "row" }} alignItems={{ base: "flex-start", md: "center" }} space={4} w="100%">
             {themeOptions.map(({ label, value }) => (
               <Radio
                 _text={{ color: colors.text }}
@@ -87,21 +116,17 @@ const Home = () => {
                 colorScheme="gray"
                 size="md"
                 my={1}
-                isDisabled={isSwitchOn}>
+                isDisabled={isSwitchOn}
+              >
                 {label}
               </Radio>
             ))}
           </Stack>
         </Radio.Group>
         <HStack mt={2} alignItems="center">
-          <Switch size="sm" marginLeft={-2}
-            isChecked={isSwitchOn}
-            onToggle={handleSwitch}
-          />
+          <Switch size="sm" marginLeft={-2} isChecked={isSwitchOn} onToggle={handleSwitch} colorScheme="emerald" />
           <Text style={styles.switchLabel}>Automático</Text>
         </HStack>
-
-
       </Card>
       <Card style={styles.card} shadow={2}>
         <Text style={styles.cardTitle}>Teste API</Text>
@@ -143,11 +168,7 @@ const Home = () => {
             <HStack space={2} alignItems="center">
               <Alert.Icon />
               <Text style={styles.alertText}>{errorMessage}</Text>
-              <IconButton
-                variant="unstyled"
-                icon={<CloseIcon size="3" />}
-                onPress={() => setErrorMessage(null)}
-              />
+              <IconButton variant="unstyled" icon={<CloseIcon size="3" />} onPress={() => setErrorMessage(null)} />
             </HStack>
           </VStack>
         </Alert>

@@ -44,6 +44,5 @@ const themes = {
 
 export const useColors = () => {
   const theme = useThemeStore((state) => state.theme);
-  console.log(theme)
   return themes[theme] || themes.light;
 };

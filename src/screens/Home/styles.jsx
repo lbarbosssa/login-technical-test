@@ -28,7 +28,7 @@ export const createStyles = (colors) => {
       color: colors.text, 
     },
     alertText: {
-      color: "#721c24",
+      color: colors.dangerDark,
       fontSize: 14,
       flex: 1,
     },

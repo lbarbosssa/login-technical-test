@@ -3,7 +3,6 @@ import { LogBox } from 'react-native';
 import { NativeBaseProvider } from "native-base";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppRoutes from './routes/AppRoutes';
-import { theme } from "./theme/theme";
 import { AuthProvider } from './contexts/AuthContext';
 
 LogBox.ignoreLogs([
@@ -13,7 +12,7 @@ LogBox.ignoreLogs([
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <NativeBaseProvider theme={theme}>
+      <NativeBaseProvider >
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
