@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Text, SafeAreaView, useColorScheme, Appearance } from "react-native";
+import { SafeAreaView, useColorScheme, Appearance, NativeModules, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, Alert, VStack, HStack, IconButton, CloseIcon, Card, Radio, Stack, Switch } from "native-base";
+import { Button, Alert, VStack, HStack, IconButton, CloseIcon, Card, Radio, Stack, Switch, Text } from "native-base";
 import api from "../../services/api";
 import ModalList from "../../components/ModalList/ModalList";
 
@@ -9,10 +9,13 @@ import { useThemeStore } from "../../store/themeStore";
 import { useColors } from '../../theme/colors';
 import { createStyles } from "./styles";
 
+
 const themeOptions = [
   { label: 'Claro', value: 'light' },
   { label: 'Escuro', value: 'dark' },
 ];
+
+const isIos = Platform.OS === 'ios'
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -21,6 +24,16 @@ const Home = () => {
   const [loadingSuccess, setLoadingSuccess] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [NativeModuleMessage, setNativeModuleMessage] = useState('');
+
+  const { DeviceInfoModule } = NativeModules;
+
+  if (isIos) {
+    DeviceInfoModule.getIOSVersion((iosVersion) => {
+      setNativeModuleMessage(iosVersion)
+      console.log('Versão do iOS:', iosVersion);
+    });
+  }
 
   const { theme, setTheme } = useThemeStore();
   const colors = useColors();
@@ -100,6 +113,20 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+
+      <Card style={styles.card} shadow={2}>
+        <Text style={styles.cardTitle}>Integração Nativa</Text>
+        <Text style={styles.cardDescription}>
+          Valide a integração nativa
+        </Text>
+        <Text style={styles.cardDescription}>
+          {isIos ? 'Versão do sistema operacional: ' : 'Fabricante do dispositivo: '}
+          <Text bold>{NativeModuleMessage}</Text>
+        </Text>
+
+
+      </Card>
       <Card style={styles.card} shadow={2}>
         <Text style={styles.cardTitle}>Gerenciamento de Estado</Text>
         <Text style={styles.cardDescription}>
