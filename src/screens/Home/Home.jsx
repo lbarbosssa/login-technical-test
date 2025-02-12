@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { SafeAreaView, useColorScheme, Appearance, NativeModules, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, Alert, VStack, HStack, IconButton, CloseIcon, Card, Radio, Stack, Switch, Text } from "native-base";
+import { Button, Alert, VStack, HStack, IconButton, CloseIcon, Card, Radio, Stack, Switch, Text, ScrollView } from "native-base";
 import api from "../../services/api";
 import ModalList from "../../components/ModalList/ModalList";
-
+import AuthContext from "../../contexts/AuthContext";
 import { useThemeStore } from "../../store/themeStore";
 import { useColors } from '../../theme/colors';
 import { createStyles } from "./styles";
@@ -17,7 +17,8 @@ const themeOptions = [
 
 const isIos = Platform.OS === 'ios'
 
-const Home = () => {
+const Home = ({ navigation }) => {
+
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -25,8 +26,9 @@ const Home = () => {
   const [loadingError, setLoadingError] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const [NativeModuleMessage, setNativeModuleMessage] = useState('');
+  const { logout } = useContext(AuthContext);
 
-  const { DeviceInfoModule, TesteNativeModule } = NativeModules;
+  const { DeviceInfoModule } = NativeModules;
 
   if (isIos) {
     DeviceInfoModule.getIOSVersion((iosVersion) => {
@@ -113,6 +115,14 @@ const Home = () => {
     }
   };
 
+  const handleLogoff = () => {
+    logout()
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  }
+
   const handleSwitch = (value) => {
     setIsSwitchOn(value);
     if (value) {
@@ -122,96 +132,111 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView w={['100%']} contentContainerStyle={styles.centerScroll}>
+        <Card style={styles.card} shadow={2}>
+          <Text style={styles.cardTitle}>Integração Nativa</Text>
+          <Text style={styles.cardDescription}>
+            Valide a integração nativa
+          </Text>
+          <Text style={styles.cardDescription}>
+            {isIos ? 'Versão do sistema operacional: ' : 'Fabricante do dispositivo: '}
+            <Text bold textTransform={'capitalize'}>{NativeModuleMessage}</Text>
+          </Text>
 
 
-      <Card style={styles.card} shadow={2}>
-        <Text style={styles.cardTitle}>Integração Nativa</Text>
-        <Text style={styles.cardDescription}>
-          Valide a integração nativa
-        </Text>
-        <Text style={styles.cardDescription}>
-          {isIos ? 'Versão do sistema operacional: ' : 'Fabricante do dispositivo: '}
-          <Text bold textTransform={'capitalize' }>{NativeModuleMessage}</Text>
-        </Text>
+        </Card>
+        <Card style={styles.card} shadow={2}>
+          <Text style={styles.cardTitle}>Gerenciamento de Estado</Text>
+          <Text style={styles.cardDescription}>
+            Configure sua preferência de tema
+          </Text>
 
+          <Radio.Group name="themeGroup" value={theme} onChange={setTheme}>
+            <Stack direction={{ base: "row" }} alignItems={{ base: "flex-start", md: "center" }} space={4} w="100%">
+              {themeOptions.map(({ label, value }) => (
+                <Radio
+                  _text={{ color: colors.text }}
+                  key={value}
+                  value={value}
+                  colorScheme="gray"
+                  size="md"
+                  my={1}
+                  isDisabled={isSwitchOn}
+                >
+                  {label}
+                </Radio>
+              ))}
+            </Stack>
+          </Radio.Group>
+          <HStack mt={2} alignItems="center">
+            <Switch size="sm" marginLeft={-2} isChecked={isSwitchOn} onToggle={handleSwitch} colorScheme="emerald" />
+            <Text style={styles.switchLabel}>Automático</Text>
+          </HStack>
+        </Card>
+        <Card style={styles.card} shadow={2}>
+          <Text style={styles.cardTitle}>Teste API</Text>
+          <Text style={styles.cardDescription}>
+            Teste a comunicação com a API utilizando os botões abaixo.
+          </Text>
 
-      </Card>
-      <Card style={styles.card} shadow={2}>
-        <Text style={styles.cardTitle}>Gerenciamento de Estado</Text>
-        <Text style={styles.cardDescription}>
-          Configure sua preferência de tema
-        </Text>
+          <HStack space={4} mt={4}>
+            <Button
+              bg={colors.success}
+              _text={{ color: colors.txtW }}
+              _pressed={{ bg: colors.successDark }}
+              borderRadius="md"
+              onPress={() => userData("/posts", "success")}
+              isDisabled={loadingSuccess || loadingError}
+              isLoading={loadingSuccess}
+              flex={1}
+            >
+              Testar - Retorno
+            </Button>
+            <Button
+              bg={colors.danger}
+              _text={{ color: colors.txtW }}
+              _pressed={{ bg: colors.dangerDark }}
+              borderRadius="md"
+              onPress={() => userData("/error", "error")}
+              isDisabled={loadingSuccess || loadingError}
+              isLoading={loadingError}
+              flex={1}
+            >
+              Testar - Erro
+            </Button>
+          </HStack>
+        </Card>
 
-        <Radio.Group name="themeGroup" value={theme} onChange={setTheme}>
-          <Stack direction={{ base: "row" }} alignItems={{ base: "flex-start", md: "center" }} space={4} w="100%">
-            {themeOptions.map(({ label, value }) => (
-              <Radio
-                _text={{ color: colors.text }}
-                key={value}
-                value={value}
-                colorScheme="gray"
-                size="md"
-                my={1}
-                isDisabled={isSwitchOn}
-              >
-                {label}
-              </Radio>
-            ))}
-          </Stack>
-        </Radio.Group>
-        <HStack mt={2} alignItems="center">
-          <Switch size="sm" marginLeft={-2} isChecked={isSwitchOn} onToggle={handleSwitch} colorScheme="emerald" />
-          <Text style={styles.switchLabel}>Automático</Text>
-        </HStack>
-      </Card>
-      <Card style={styles.card} shadow={2}>
-        <Text style={styles.cardTitle}>Teste API</Text>
-        <Text style={styles.cardDescription}>
-          Teste a comunicação com a API utilizando os botões abaixo.
-        </Text>
+        {errorMessage && (
+          <Alert w="90%" status="error" mb={4}>
+            <VStack space={2} flexShrink={1} w="100%">
+              <HStack space={2} alignItems="center">
+                <Alert.Icon />
+                <Text style={styles.alertText}>{errorMessage}</Text>
+                <IconButton variant="unstyled" icon={<CloseIcon size="3" />} onPress={() => setErrorMessage(null)} />
+              </HStack>
+            </VStack>
+          </Alert>
+        )}
 
-        <HStack space={4} mt={4}>
-          <Button
-            bg={colors.success}
-            _text={{ color: colors.txtW }}
-            _pressed={{ bg: colors.successDark }}
-            borderRadius="md"
-            onPress={() => userData("/posts", "success")}
-            isDisabled={loadingSuccess || loadingError}
-            isLoading={loadingSuccess}
-            flex={1}
-          >
-            Testar - Sucesso
-          </Button>
-          <Button
-            bg={colors.danger}
-            _text={{ color: colors.txtW }}
-            _pressed={{ bg: colors.dangerDark }}
-            borderRadius="md"
-            onPress={() => userData("/error", "error")}
-            isDisabled={loadingSuccess || loadingError}
-            isLoading={loadingError}
-            flex={1}
-          >
-            Testar - Error
-          </Button>
-        </HStack>
-      </Card>
-
-      {errorMessage && (
-        <Alert w="90%" status="error">
-          <VStack space={2} flexShrink={1} w="100%">
-            <HStack space={2} alignItems="center">
-              <Alert.Icon />
-              <Text style={styles.alertText}>{errorMessage}</Text>
-              <IconButton variant="unstyled" icon={<CloseIcon size="3" />} onPress={() => setErrorMessage(null)} />
-            </HStack>
-          </VStack>
-        </Alert>
-      )}
-
+        <Card style={styles.card} shadow={2}>
+          <HStack space={4} alignItems="center" justifyContent="space-between">
+            <Text style={styles.cardTitle}>Logoff</Text>
+            <Button
+              bg={colors.primary}
+              _text={{ color: colors.txtW }}
+              _pressed={{ bg: colors.primaryDark }}
+              borderRadius="md"
+              onPress={handleLogoff}
+              width={100}
+            >
+              Sair
+            </Button>
+          </HStack>
+        </Card>
+      </ScrollView>
       <ModalList visible={modalVisible} data={data} onClose={() => setModalVisible(false)} />
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

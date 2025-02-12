@@ -35,6 +35,10 @@ export const createStyles = (colors) => {
     switchLabel: {
       color: colors.text,
       fontSize: 16
-    }
+    },
+    centerScroll: {
+      display: 'flex',
+       alignItems: 'center'
+      }
   });
 };
