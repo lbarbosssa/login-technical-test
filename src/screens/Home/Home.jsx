@@ -26,12 +26,21 @@ const Home = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const [NativeModuleMessage, setNativeModuleMessage] = useState('');
 
-  const { DeviceInfoModule } = NativeModules;
+  const { DeviceInfoModule, TesteNativeModule } = NativeModules;
 
   if (isIos) {
     DeviceInfoModule.getIOSVersion((iosVersion) => {
       setNativeModuleMessage(iosVersion)
       console.log('Versão do iOS:', iosVersion);
+    });
+  } else {
+    DeviceInfoModule.getManufacturer((error, manufacturer) => {
+      if (error) {
+        console.error(error);
+      } else {
+        setNativeModuleMessage(manufacturer)
+        console.log('Fabricante:', manufacturer);
+      }
     });
   }
 
@@ -122,7 +131,7 @@ const Home = () => {
         </Text>
         <Text style={styles.cardDescription}>
           {isIos ? 'Versão do sistema operacional: ' : 'Fabricante do dispositivo: '}
-          <Text bold>{NativeModuleMessage}</Text>
+          <Text bold textTransform={'capitalize' }>{NativeModuleMessage}</Text>
         </Text>
 
 
