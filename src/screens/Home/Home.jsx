@@ -199,7 +199,7 @@ const Home = () => {
       </Card>
 
       {errorMessage && (
-        <Alert w="90%" status="error" mt={4}>
+        <Alert w="90%" status="error">
           <VStack space={2} flexShrink={1} w="100%">
             <HStack space={2} alignItems="center">
               <Alert.Icon />

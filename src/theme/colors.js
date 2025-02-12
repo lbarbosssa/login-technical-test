@@ -3,6 +3,7 @@ import { useThemeStore } from "../store/themeStore";
 const white = '#fff';
 const primary = "#07639d";
 const primaryDark = "#054f7a";
+const secondaryDark = "#002044";
 const backdrop = "rgba(0,0,0,0.5)";
 const danger = "#dc3545";
 const dangerDark = "#a71d2a";
@@ -23,7 +24,8 @@ const themes = {
     danger,
     dangerDark,
     success,
-    successDark
+    successDark,
+    secondaryDark
   },
   dark: {
     primary,
@@ -38,7 +40,8 @@ const themes = {
     danger,
     dangerDark,
     success,
-    successDark
+    successDark,
+    secondaryDark
   },
 };
 
