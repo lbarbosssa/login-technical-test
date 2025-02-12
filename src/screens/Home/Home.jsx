@@ -133,7 +133,7 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView w={['100%']} contentContainerStyle={styles.centerScroll}>
-        <Card style={styles.card} shadow={2}>
+        <Card style={styles.card} shadow={isIos ? 2 : -2}>
           <Text style={styles.cardTitle}>Integração Nativa</Text>
           <Text style={styles.cardDescription}>
             Valide a integração nativa
@@ -145,7 +145,7 @@ const Home = ({ navigation }) => {
 
 
         </Card>
-        <Card style={styles.card} shadow={2}>
+        <Card style={styles.card} shadow={isIos ? 2 : -2}>
           <Text style={styles.cardTitle}>Gerenciamento de Estado</Text>
           <Text style={styles.cardDescription}>
             Configure sua preferência de tema
@@ -173,7 +173,7 @@ const Home = ({ navigation }) => {
             <Text style={styles.switchLabel}>Automático</Text>
           </HStack>
         </Card>
-        <Card style={styles.card} shadow={2}>
+        <Card style={styles.card} shadow={isIos ? 2 : -2}>
           <Text style={styles.cardTitle}>Teste API</Text>
           <Text style={styles.cardDescription}>
             Teste a comunicação com a API utilizando os botões abaixo.
@@ -219,7 +219,7 @@ const Home = ({ navigation }) => {
           </Alert>
         )}
 
-        <Card style={styles.card} shadow={2}>
+        <Card style={styles.card} shadow={isIos ? 2 : -2}>
           <HStack space={4} alignItems="center" justifyContent="space-between">
             <Text style={styles.cardTitle}>Logoff</Text>
             <Button

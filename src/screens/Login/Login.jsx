@@ -14,14 +14,16 @@ export default function Login({ navigation }) {
   const { control, handleSubmit, formState: { errors } } = useForm();
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const { login } = useContext(AuthContext);
   const colors = useColors();
 
   const slideAnim = useRef(new Animated.Value(0)).current; // Inicializa a animação da translação
   const fadeAnim = useRef(new Animated.Value(0)).current; // Inicializa a animação da opacidade
-  
+
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       await login(data.email, data.password);
       navigation.reset({
@@ -31,25 +33,26 @@ export default function Login({ navigation }) {
     } catch (error) {
       setLoginError("Falha na autenticação. Tente novamente.");
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      
+
       Animated.timing(slideAnim, {
-        toValue: 10, 
+        toValue: 10,
         duration: 1500,
         useNativeDriver: true,
       }).start();
 
       Animated.timing(fadeAnim, {
-        toValue: 0.4, 
+        toValue: 0.4,
         duration: 1500,
         useNativeDriver: true,
       }).start();
-    }, 1000); 
+    }, 1000);
 
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, [slideAnim, fadeAnim]);
 
   return (
@@ -95,6 +98,9 @@ export default function Login({ navigation }) {
                 <Input
                   placeholder="Digite seu e-mail"
                   borderRadius="md"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
                   height={45}
                   value={value}
                   onChangeText={onChange}
@@ -145,8 +151,10 @@ export default function Login({ navigation }) {
               _pressed={{ bg: colors.primaryDark }}
               borderRadius="md"
               onPress={handleSubmit(onSubmit)}
+              isDisabled={isLoading}
+              isLoading={isLoading}
             >
-              Login
+              Acessar
             </Button>
           </VStack>
         </Box>
