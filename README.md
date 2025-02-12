@@ -50,7 +50,7 @@ cd ios && pod install
 ```
 Volte para a raiz do projeto:
 ```bash
-cd ios && pod install
+cd ..
 ```
 
 4. Execute o projeto
