@@ -13,7 +13,7 @@ Este repositório contém uma aplicação (Teste) desenvolvida em React Native. 
 
 ## Demo
 
-![demo](./.github/assets/demo.mp4)
+📹 [Assista à demo](https://drive.google.com/file/d/1FehHNqEDF4PsSnuLfPrBdt4nxDg-Qdr-/view)
 
 ## Pré-requisitos
 
